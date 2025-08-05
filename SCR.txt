@@ -1,0 +1,9 @@
+NXP Software Content Register
+
+Package:                     meta-eiqa.git
+Version:                     eIQAuto_S32N7_PRM_3.13.0
+Outgoing License:            LA_OPT_Online_Code_Hosting_License - v1.3 December 2024
+License File:                LICENSE
+Type of Content:             Yocto recipe files
+Description and comments:    Yocto Layer for eIQAuto product
+Origin:                      NXP
