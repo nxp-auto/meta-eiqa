@@ -22,18 +22,21 @@ EIQA_INCLUDE = "${EIQA_ROOT}/include"
 EIQA_CMAKE = "${EIQA_ROOT}/cmake"
 
 python do_fetch:append() {
+    if d.getVar('EIQA_RUNTIME_PREBUILT_URL'):
+        return
+
     eiqa_runtime_prebuilt_tar_path = d.getVar('EIQA_RUNTIME_PREBUILT_TAR_PATH')
     if not os.path.isabs(eiqa_runtime_prebuilt_tar_path):
         eiqa_runtime_prebuilt_tar_path = os.path.join(d.getVar('THISDIR'), 'files', eiqa_runtime_prebuilt_tar_path)
 
-    sha1_expected = d.getVarFlag('SRC_URI', 'SHA1SUM')
-    md5_expected = d.getVarFlag('SRC_URI', 'MD5SUM')
+    sha256_expected = d.getVarFlag('SRC_URI', 'sha256sum')
+    md5_expected = d.getVarFlag('SRC_URI', 'md5sum')
 
-    sha1_actual = bb.utils.sha1_file(eiqa_runtime_prebuilt_tar_path)
+    sha256_actual = bb.utils.sha256_file(eiqa_runtime_prebuilt_tar_path)
     md5_actual = bb.utils.md5_file(eiqa_runtime_prebuilt_tar_path)
 
-    if sha1_actual != sha1_expected:
-        bb.fatal(f"SHA1 mismatch: expected {sha1_expected}, found {sha1_actual}")
+    if sha256_actual != sha256_expected:
+        bb.fatal(f"SHA256 mismatch: expected {sha256_expected}, found {sha256_actual}")
     if md5_actual != md5_expected:
         bb.fatal(f"MD5 mismatch: expected {md5_expected}, found {md5_actual}")
 }
