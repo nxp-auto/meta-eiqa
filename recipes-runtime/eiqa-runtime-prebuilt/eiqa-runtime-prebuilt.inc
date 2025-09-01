@@ -86,6 +86,7 @@ FILES:${PN}-firmware = "${nonarch_base_libdir}/firmware/NeutronFirmware.elf"
 FILES:${PN}-dev += "${EIQA_INCLUDE} ${EIQA_CMAKE}"
 FILES:${PN}-staticdev += "${EIQA_AR}"
 
+RDEPENDS:${PN} += "libstdc++"
 RDEPENDS:${PN}-dev += "${PN}-staticdev"
 BBCLASSEXTEND = "native nativesdk"
 
