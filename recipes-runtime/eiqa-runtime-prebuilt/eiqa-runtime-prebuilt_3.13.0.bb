@@ -4,7 +4,7 @@ EIQA_RUNTIME_PREBUILT_URL ?= ""
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI = "${@'${EIQA_RUNTIME_PREBUILT_URL}' if d.getVar('EIQA_RUNTIME_PREBUILT_URL') else 'file://${EIQA_RUNTIME_PREBUILT_TAR_PATH}'}"
-SRC_URI[md5sum] = "4fbe122a06e39b520daac862ae23855d"
-SRC_URI[sha256sum] = "6472e5d43231d95a9db0527e60a9de1c8d191e6aea7fb7a6f896e3f2569e271e"
+SRC_URI[md5sum] = "1badf8b9dd4013253b6a913ad9cae2fc"
+SRC_URI[sha256sum] = "095512b1237aff29fd61fe91b75bc8e29bb877f1332504d84c2411e83fe0f86e"
 
 require eiqa-runtime-prebuilt.inc
