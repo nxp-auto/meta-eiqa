@@ -2,7 +2,7 @@ SUMMARY = "Deploy eIQAuto prebuilt into Yocto build image"
 DESCRIPTION = "This recipe will install prebuilt of EIQA_RUNTIME into the OE linux"
 
 LICENSE = "LA_OPT_NXP_Software_License"
-LIC_FILES_CHKSUM = "file://${EIQAUTO_LICENSE};md5=fbfd764b6215b180651ec625cbee62e5"
+LIC_FILES_CHKSUM = "file://${EIQAUTO_LICENSE};md5=8b13b71da2ba9684156478a0800d536a"
 
 python do_display_banner() {
     bb.plain("**********************************");
