@@ -27,7 +27,12 @@ python do_fetch:append() {
 
     eiqa_runtime_prebuilt_tar_path = d.getVar('EIQA_RUNTIME_PREBUILT_TAR_PATH')
     if not os.path.isabs(eiqa_runtime_prebuilt_tar_path):
-        eiqa_runtime_prebuilt_tar_path = os.path.join(d.getVar('THISDIR'), 'files', eiqa_runtime_prebuilt_tar_path)
+        paths = (d.getVar("FILESEXTRAPATHS") or "").split(":")
+        for path in paths:
+            candidate = os.path.join(path, eiqa_runtime_prebuilt_tar_path)
+            if os.path.exists(candidate):
+                eiqa_runtime_prebuilt_tar_path = candidate
+                break
 
     sha256_expected = d.getVarFlag('SRC_URI', 'sha256sum')
     md5_expected = d.getVarFlag('SRC_URI', 'md5sum')
