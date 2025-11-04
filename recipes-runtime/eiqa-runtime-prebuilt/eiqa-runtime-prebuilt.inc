@@ -51,17 +51,17 @@ do_install() {
     install -m 0755 ${S}/neutron/lib/s32n79_board_a78_linux/NeutronFirmware.elf ${D}/${nonarch_base_libdir}/firmware
 
     install -d ${D}${EIQA_SO}
-    install -m 0755 ${S}/lib/cortex-a78/*.so* ${D}${EIQA_SO}
+    install -m 0755 ${S}/lib/aarch64/*.so* ${D}${EIQA_SO}
 
     install -d ${D}${EIQA_AR}
     install -m 0755 ${S}/neutron/lib/s32n79_board_a78_linux/*.a ${D}${EIQA_AR}
     install -m 0755 ${S}/eiqa_carv/lib/*.a ${D}${EIQA_AR}
-    for f in ${S}/lib/cortex-a78/libeiqa*.a; do
+    for f in ${S}/lib/aarch64/libeiqa*.a; do
         [ -f "$f" ] && install -m 0755 "$f" ${D}${EIQA_AR}
     done
 
     install -d ${D}${libdir_nativesdk}
-    for f in ${S}/lib/cortex-a78/*.a; do
+    for f in ${S}/lib/aarch64/*.a; do
         basename=$(basename $f)
         case $basename in
             libeiqa*.a) ;;
@@ -83,7 +83,7 @@ do_install() {
     cp -R ${S}/eiqa_carv/include/* ${D}${EIQA_INCLUDE}
 
     install -d ${D}${EIQA_CMAKE}
-    cp -R ${S}/lib/cortex-a78/cmake/* ${D}${EIQA_CMAKE}
+    cp -R ${S}/lib/aarch64/cmake/* ${D}${EIQA_CMAKE}
     cp -R ${S}/neutron/lib/s32n79_board_a78_linux/cmake/* ${D}${EIQA_CMAKE}
     cp -R ${S}/eiqa_carv/lib/cmake/* ${D}${EIQA_CMAKE}
 }
