@@ -21,6 +21,13 @@ EIQA_BIN = "${EIQA_ROOT}/bin"
 EIQA_INCLUDE = "${EIQA_ROOT}/include"
 EIQA_CMAKE = "${EIQA_ROOT}/cmake"
 
+python __anonymous() {
+    if bb.utils.vercmp_string(d.getVar('PV'), '3.13.0') > 0:
+        d.setVar('EIQA_ARCH_LIBDIR', 'aarch64')
+    else:
+        d.setVar('EIQA_ARCH_LIBDIR', 'cortex-a78')
+}
+
 python do_fetch:append() {
     if d.getVar('EIQA_RUNTIME_PREBUILT_URL'):
         return
@@ -51,17 +58,17 @@ do_install() {
     install -m 0755 ${S}/neutron/lib/s32n79_board_a78_linux/NeutronFirmware.elf ${D}/${nonarch_base_libdir}/firmware
 
     install -d ${D}${EIQA_SO}
-    install -m 0755 ${S}/lib/aarch64/*.so* ${D}${EIQA_SO}
+    install -m 0755 ${S}/lib/${EIQA_ARCH_LIBDIR}/*.so* ${D}${EIQA_SO}
 
     install -d ${D}${EIQA_AR}
     install -m 0755 ${S}/neutron/lib/s32n79_board_a78_linux/*.a ${D}${EIQA_AR}
     install -m 0755 ${S}/eiqa_carv/lib/*.a ${D}${EIQA_AR}
-    for f in ${S}/lib/aarch64/libeiqa*.a; do
+    for f in ${S}/lib/${EIQA_ARCH_LIBDIR}/libeiqa*.a; do
         [ -f "$f" ] && install -m 0755 "$f" ${D}${EIQA_AR}
     done
 
     install -d ${D}${libdir_nativesdk}
-    for f in ${S}/lib/aarch64/*.a; do
+    for f in ${S}/lib/${EIQA_ARCH_LIBDIR}/*.a; do
         basename=$(basename $f)
         case $basename in
             libeiqa*.a) ;;
@@ -83,7 +90,7 @@ do_install() {
     cp -R ${S}/eiqa_carv/include/* ${D}${EIQA_INCLUDE}
 
     install -d ${D}${EIQA_CMAKE}
-    cp -R ${S}/lib/aarch64/cmake/* ${D}${EIQA_CMAKE}
+    cp -R ${S}/lib/${EIQA_ARCH_LIBDIR}/cmake/* ${D}${EIQA_CMAKE}
     cp -R ${S}/neutron/lib/s32n79_board_a78_linux/cmake/* ${D}${EIQA_CMAKE}
     cp -R ${S}/eiqa_carv/lib/cmake/* ${D}${EIQA_CMAKE}
 }
