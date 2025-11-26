@@ -80,7 +80,7 @@ do_install() {
     cp -R ${S}/bin/a78/* ${D}${EIQA_BIN}
     for f in $(find ${S}/bin/a78 -type f); do
         case "$(file -b "$f")" in
-            *ELF*executable*) [ -f "$f" ] && install -m 0755 "$f" ${D}${EIQA_BIN} ;;
+            *ELF*executable*) [ -f "$f" ] && install -m 0755 "$f" ${D}${EIQA_BIN}/${f#${S}/bin/a78/} ;;
         esac
     done
 
