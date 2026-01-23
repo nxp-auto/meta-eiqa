@@ -95,7 +95,7 @@ do_install() {
     cp -R ${S}/eiqa_carv/lib/cmake/* ${D}${EIQA_CMAKE}
 }
 
-PACKAGES += "${PN}-firmware"
+PACKAGES =+ "${PN}-firmware"
 
 FILES:${PN} += "${EIQA_SO} ${EIQA_BIN}"
 FILES:${PN}-firmware = "${nonarch_base_libdir}/firmware/NeutronFirmware.elf"
