@@ -3,7 +3,7 @@ EIQA_RUNTIME_PREBUILT_URL ??= ""
 
 require eiqa-runtime-prebuilt-src.inc
 
-SRC_URI[md5sum] = "9e3ae5aa65422de0240ae459171a8e05"
-SRC_URI[sha256sum] = "aaa46cb03f5b39af5dcc4c0040af8ccf5e7b7bebaabfee92bfa004e802f22b79"
+SRC_URI[md5sum] = "ea330edfe7ac2c9f57777620930f49d5"
+SRC_URI[sha256sum] = "47a338cff4745c04f5dc955f33f568243ac46ad4ac5251c84ecb14d9665bccf7"
 
 require eiqa-runtime-prebuilt.inc
