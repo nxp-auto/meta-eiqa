@@ -54,14 +54,10 @@ python do_fetch:append() {
 }
 
 do_install() {
-    install -d ${D}/${nonarch_base_libdir}/firmware
-    install -m 0755 ${S}/neutron/lib/s32n79_board_a78_linux/NeutronFirmware.elf ${D}/${nonarch_base_libdir}/firmware
-
     install -d ${D}${EIQA_SO}
     install -m 0755 ${S}/lib/${EIQA_ARCH_LIBDIR}/*.so* ${D}${EIQA_SO}
 
     install -d ${D}${EIQA_AR}
-    install -m 0755 ${S}/neutron/lib/s32n79_board_a78_linux/*.a ${D}${EIQA_AR}
     install -m 0755 ${S}/eiqa_carv/lib/*.a ${D}${EIQA_AR}
     for f in ${S}/lib/${EIQA_ARCH_LIBDIR}/libeiqa*.a; do
         [ -f "$f" ] && install -m 0755 "$f" ${D}${EIQA_AR}
@@ -86,19 +82,22 @@ do_install() {
 
     install -d ${D}${EIQA_INCLUDE}
     cp -R ${S}/include/* ${D}${EIQA_INCLUDE}
-    cp -R ${S}/neutron/include/* ${D}${EIQA_INCLUDE}
     cp -R ${S}/eiqa_carv/include/* ${D}${EIQA_INCLUDE}
 
     install -d ${D}${EIQA_CMAKE}
     cp -R ${S}/lib/${EIQA_ARCH_LIBDIR}/cmake/* ${D}${EIQA_CMAKE}
-    cp -R ${S}/neutron/lib/s32n79_board_a78_linux/cmake/* ${D}${EIQA_CMAKE}
     cp -R ${S}/eiqa_carv/lib/cmake/* ${D}${EIQA_CMAKE}
+
+    # install in sysroot the neutron package delivered with eIQAuto which may be used by neutron recipe
+    install -d ${D}${datadir}/neutron
+    cp -R ${S}/neutron/* ${D}${datadir}/neutron
 }
 
-PACKAGES =+ "${PN}-firmware"
+SYSROOT_DIRS += "${datadir}/neutron"
+ALLOW_EMPTY:${PN} = "1"
+INSANE_SKIP:${PN} += "installed-vs-shipped"
 
 FILES:${PN} += "${EIQA_SO} ${EIQA_BIN}"
-FILES:${PN}-firmware = "${nonarch_base_libdir}/firmware/NeutronFirmware.elf"
 
 FILES:${PN}-dev += "${EIQA_INCLUDE} ${EIQA_CMAKE}"
 FILES:${PN}-staticdev += "${EIQA_AR}"
@@ -107,15 +106,11 @@ RDEPENDS:${PN} += "libstdc++"
 RDEPENDS:${PN}-dev += "${PN}-staticdev"
 BBCLASSEXTEND = "native nativesdk"
 
-ALLOW_EMPTY:${PN} = "1"
-ALLOW_EMPTY:${PN}-firmware = "1"
-
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_SYSROOT_STRIP = "1"
 
 INSANE_SKIP:${PN} += "ldflags"
 INSANE_SKIP:${PN} += "already-stripped"
-INSANE_SKIP:${PN}-firmware += "arch"
 
 FILES_SOLIBSDEV = ""
