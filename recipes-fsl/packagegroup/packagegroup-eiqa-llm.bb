@@ -10,4 +10,5 @@ RDEPENDS:${PN} = " \
     python3-pip \
     onnxruntime \
     neutron \
+    llama-cpp \
 "
