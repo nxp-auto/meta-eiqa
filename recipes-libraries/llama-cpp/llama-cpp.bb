@@ -1,7 +1,7 @@
 SUMMARY = "llama.cpp"
 DESCRIPTION = "LLM inference in C/C++"
 
-SRCREV = "5f91b1d5d578037ce677fa6769179c6a780a6494"
+SRCREV = "42401c72b8d239240ed0fb37694d29ac33b3bc4f"
 
 S = "${WORKDIR}/git"
 
