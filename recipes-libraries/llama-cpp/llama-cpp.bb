@@ -1,7 +1,8 @@
 SUMMARY = "llama.cpp"
 DESCRIPTION = "LLM inference in C/C++"
 
-SRCREV = "42401c72b8d239240ed0fb37694d29ac33b3bc4f"
+# Commit from 17 June 2026
+SRCREV = "8086439a4cea94c71a5dfb8fe4ad1546aebd640f"
 
 S = "${WORKDIR}/git"
 
@@ -30,10 +31,15 @@ EXTRA_OECMAKE = "\
 
 FILES:${PN} += "\
     ${bindir}/* \
+    ${libdir}/*.so \
 "
 
 FILES:${PN}-dev += "\
     ${includedir}/* \
 "
+
+# Prevent -dev from claiming bare .so files.
+FILES_SOLIBSDEV = ""
+INSANE_SKIP:${PN} += "buildpaths dev-so"
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
