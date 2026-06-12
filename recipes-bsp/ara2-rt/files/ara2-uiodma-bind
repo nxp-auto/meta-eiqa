@@ -1,0 +1,9 @@
+#!/bin/sh
+# Bind Ara-2 PCIe device to uiodma driver
+set -eu
+
+modprobe uiodma
+
+if [ -w /sys/bus/pci/drivers/uiodma/new_id ]; then
+    echo "1e58 0002" > /sys/bus/pci/drivers/uiodma/new_id 2>/dev/null || true
+fi

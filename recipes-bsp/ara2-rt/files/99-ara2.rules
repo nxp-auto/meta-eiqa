@@ -1,0 +1,3 @@
+# Ara-2 PCIe device detection
+# Trigger uiodma bind + hw init + proxy when an Ara-2 device is plugged
+ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x1e58", ATTR{device}=="0x0002", TAG+="systemd", ENV{SYSTEMD_WANTS}+="ara2-uiodma-bind.service"

@@ -1,0 +1,13 @@
+[Unit]
+Description=Bind Ara-2 PCIe device to uiodma
+DefaultDependencies=no
+After=systemd-modules-load.service
+Before=ara2-hw-init.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/ara2-uiodma-bind
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

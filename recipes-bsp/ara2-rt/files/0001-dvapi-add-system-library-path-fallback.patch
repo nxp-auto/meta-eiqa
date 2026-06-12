@@ -1,0 +1,41 @@
+dvapi: add system library path fallback for FHS rootfs
+
+Upstream dvapi.py only searches for libaraclient via DV_TGT_ROOT (SDK
+tree layout) or relative to __file__ (../lib/).  Neither works when the
+library is installed to a standard FHS path such as /usr/lib/.
+
+Add a final fallback that loads the library by bare SONAME, letting the
+system dynamic linker (ld.so) resolve it from the default search paths.
+This is the standard ctypes idiom for system-installed shared libraries.
+
+The upstream search order is preserved: DV_TGT_ROOT paths are tried
+first, then the relative path, and only then the linker fallback.
+
+--- a/art/linux/aarch64/include/dvapi.py	2026-04-29 19:00:35.334496891 +0300
++++ b/art/linux/aarch64/include/dvapi.py	2026-04-29 19:01:01.590783739 +0300
+@@ -92,6 +92,25 @@
+             else:
+                 lib_loaded = load_dvinfclient_lib(os.path.abspath(os.path.join(cwd,"../lib/libaraclient_aarch64.so")))
+       
++    # Fallback: let the dynamic linker find the library via standard paths
++    if not lib_loaded:
++        soname = None
++        if curr_platform == "Linux":
++            os_info = os.uname()
++            if "x86_64" in os_info[4]:
++                soname = "libaraclient_x86_64.so"
++            else:
++                soname = "libaraclient_aarch64.so"
++        elif curr_platform == "Windows":
++            soname = "araclient.dll"
++        if soname:
++            try:
++                DV_API_OBJ = CDLL(soname)
++                logger.info("loaded dvinfclient lib via system linker: %s", soname)
++                lib_loaded = True
++            except OSError:
++                logger.info("failed to load dvinfclient lib via system linker: %s", soname)
++
+     if not lib_loaded:
+         raise DVClientLibNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), "unable to load dvinfclient library")
+     return DV_API_OBJ

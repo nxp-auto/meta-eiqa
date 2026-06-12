@@ -1,0 +1,17 @@
+[Unit]
+Description=Ara-2 inference proxy daemon
+After=ara2-hw-init.service
+Requires=ara2-hw-init.service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/default/ara2
+WorkingDirectory=/usr/libexec/ara2/proxy
+ExecStartPre=/usr/bin/ara2-proxy-config-sync
+ExecStartPre=-/bin/rm -f /var/run/proxy.pid /var/run/dvproxy.pid
+ExecStart=/usr/libexec/ara2/proxy/proxy_aarch64 -c ${ARA2_PROXY_CONFIG}
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

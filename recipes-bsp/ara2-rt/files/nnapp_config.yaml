@@ -1,0 +1,51 @@
+---
+nnapp:
+  log:
+    dump_path: ""
+    max_error_count: 1
+    tag: ""
+
+  connection:
+    # TCP connection to the local proxy daemon
+    type: "tcp"
+    ip: "127.0.0.1"
+    port: 5000
+    sock_file: "/var/run/ara2-proxy.sock"
+
+  stats:
+    device_stats: True
+    infer_stats: 2
+
+  mode:
+    type: "infer"
+    infer:
+      type: "async"
+      sync:
+        run_once_and_for_all: False
+        utilization_stats: False
+        sleep_between_infer_usec: 50
+        dump_with_timestamp: False
+        models:
+          0:
+            name: "model1"
+            path: "/tmp/model.dvm"
+            input_path: "/tmp/input/images_raw/"
+            output_path: ""
+            iterations: 30
+            ep_list: ["all"]
+      async:
+        run_once_and_for_all: False
+        utilization_stats: False
+        dump_with_timestamp: False
+        models:
+          0:
+            name: "model1"
+            path: "/tmp/model.dvm"
+            input_path: "/tmp/input/images_raw/"
+            output_path: ""
+            batch_size: 5
+            iterations: 20
+            ep_list: ["all"]
+    ifc_perf:
+      report: True
+      end_points: "0"

@@ -1,0 +1,48 @@
+---
+
+logger:
+  sink_type: console
+  file_sink_path: "/var/log/ara2-proxy.log"
+  file_rotation: true
+  file_rotate_on_size_gt: 1024
+  file_rotate_max_files_to_retain: 4
+  default_log_level: "INFO"
+  DeviceManager: "INFO"
+
+proxy:
+  interface_name: "ara2_interface"
+  interface_type: "SOCKET"
+
+  interface_ip_address: ["127.0.0.1"]
+  interface_port: [5000]
+
+  interface_socket_file: ["/var/run/proxy.sock"]
+
+  dm_firmware_path: ./mcp0
+  device_interface: "pcie"
+  on_boot_auto_device_active_power: false
+  dm_supported_firmware_versions: [32779, 65794, 131072, 131073]
+  daemon: false
+  vpu_boot_en: true
+  check_model_integrity: true
+
+  ddr_train_on_s3_exit: true
+  device_idle_wait_time_us: 0
+  interrupt_based_response_reading: false
+  dm_mcp_throttle_disable: 0
+
+  inf_timeout_us: 60000000
+  model_ld_timeout_us: 150000000
+  llm_inf_timeout_us: 90000000
+
+  memory_manager:
+    mem_size: 17179869184
+
+  dram:
+    boardname: "willow"
+    cfg_bin: /usr/share/ara2/ddr_config/ddr_cfg_35.bin
+    training_enable: false
+    lpddr4x: 0
+    lpddrpad4x: 0
+    rank: 0
+    memory_part: 2

@@ -1,0 +1,26 @@
+#!/bin/sh
+# Sync the proxy configuration with the authoritative values in /etc/default/ara2.
+# This keeps the DDR/board settings used by ara2-hw-init and the proxy consistent
+# when an operator edits /etc/default/ara2 at runtime.
+set -eu
+
+. /etc/default/ara2
+
+CFG="${ARA2_PROXY_CONFIG:-/etc/ara2/proxy_config.yaml}"
+
+[ -f "${CFG}" ] || { echo "ara2-proxy-config-sync: ${CFG} not found" >&2; exit 1; }
+
+# Patch the duplicated dram fields from the env file. Fail if a key is missing,
+# so configuration drift surfaces loudly instead of silently shipping stale values.
+sync_key() {
+    key="$1"
+    val="$2"
+    grep -qE "^[[:space:]]*${key}:" "${CFG}" || {
+        echo "ara2-proxy-config-sync: key '${key}' not found in ${CFG}" >&2
+        exit 1
+    }
+    sed -i -E "s|^([[:space:]]*${key}:).*|\1 ${val}|" "${CFG}"
+}
+
+sync_key "boardname" "\"${ARA2_BOARD}\""
+sync_key "cfg_bin" "${ARA2_DDR_CFG}"

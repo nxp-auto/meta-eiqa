@@ -1,0 +1,51 @@
+#!/bin/sh
+# Initialize Ara-2 hardware: set active power state and configure DDR.
+# Discovers and initializes all connected Ara-2 PCIe devices.
+set -eu
+
+. /etc/default/ara2
+
+HW_DIR=/usr/libexec/ara2/hw_utils
+
+# Count Ara-2 PCIe devices on the bus (vendor 0x1e58)
+NUM_DEVICES=$(grep -rl "0x1e58" /sys/bus/pci/devices/*/vendor 2>/dev/null | wc -l)
+
+if [ "${NUM_DEVICES}" -eq 0 ]; then
+    echo "ara2-hw-init: no Ara-2 devices found on PCIe bus"
+    exit 1
+fi
+
+echo "ara2-hw-init: found ${NUM_DEVICES} Ara-2 device(s)"
+
+cd "${HW_DIR}"
+
+init_device() {
+    _dev_id=$1
+    echo "ara2-hw-init: [device ${_dev_id}] chip_info (pre-DDR)"
+    ./chip_info_aarch64 -e "d:${_dev_id}"
+
+    echo "ara2-hw-init: [device ${_dev_id}] active_enable"
+    ./active_enable_aarch64 -e "d:${_dev_id}" -m 2 # mode 2 to set to normal prd state
+
+    echo "ara2-hw-init: [device ${_dev_id}] ddr_unified_config"
+    ./ddr_unified_config_aarch64 \
+        -e "d:${_dev_id}" \
+        -s 1 -g 1 -d 0 \
+        -l "${ARA2_DDR_PLL}" \
+        -w 2 -f 0 -n 0 -u 0 \
+        -m 0 \
+        -r 0 \
+        -b "${ARA2_BOARD}" \
+        -o "${ARA2_DDR_CFG}"
+
+    echo "ara2-hw-init: [device ${_dev_id}] chip_info (post-DDR)"
+    ./chip_info_aarch64 -e "d:${_dev_id}"
+}
+
+_i=0
+while [ "${_i}" -lt "${NUM_DEVICES}" ]; do
+    init_device "${_i}"
+    _i=$((_i + 1))
+done
+
+echo "ara2-hw-init: done (${NUM_DEVICES} device(s) initialized)"
