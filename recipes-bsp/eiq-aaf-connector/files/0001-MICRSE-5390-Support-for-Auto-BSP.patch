@@ -1,0 +1,91 @@
+From 8ed27a0ccc27a652165266b5303479df0b1fb2bf Mon Sep 17 00:00:00 2001
+From: Alexandru Iulian Taran <alexandru.taran@nxp.com>
+Date: Mon, 8 Jun 2026 09:45:12 +0300
+Subject: [PATCH] MICRSE-5390 Support for Auto BSP
+
+Signed-off-by: Alexandru Iulian Taran <alexandru.taran@nxp.com>
+---
+ install.sh                               | 8 ++++----
+ pyproject.toml                           | 4 ++--
+ src/eiq_aaf_connector/config/settings.py | 3 ---
+ 3 files changed, 6 insertions(+), 9 deletions(-)
+
+diff --git a/install.sh b/install.sh
+index 6cb7a47..97914f8 100755
+--- a/install.sh
++++ b/install.sh
+@@ -155,7 +155,7 @@ else
+ fi
+ 
+ # Fetch date from server
+-srv_date=$(curl -sI -k --max-time 5 https://google.com | awk -F'Date: ' '/^Date:/ {print $2}')
++srv_date=@$(wget --no-check-certificate -qO- https://time.now/developer/api/timezone/Etc/UTC   | grep -o '"unixtime":[0-9]*'   | cut -d: -f2)
+ 
+ # Check internet + valid response
+ if [ -z "$srv_date" ]; then
+@@ -165,7 +165,7 @@ else
+   # Try to set date
+   old_date=$(date)
+   if date -u -s "$srv_date" >/dev/null 2>&1; then
+-    hwclock --systohc
++    #hwclock --systohc
+     success "System time updated successfully ($old_date -> $(date))"
+   else
+     warning "Failed to set system time. Installation might fail"
+@@ -186,7 +186,7 @@ fi
+ section "Setting up eIQ AAF Connector environment"
+ 
+ info "Creating python venv (/usr/share/eiq/aaf-connector/venv)..."
+-uv venv "/usr/share/eiq/aaf-connector/venv"
++uv venv --system-site-packages "/usr/share/eiq/aaf-connector/venv"
+ source "/usr/share/eiq/aaf-connector/venv/bin/activate"
+ 
+ section "Installing dependencies in venv"
+@@ -201,7 +201,7 @@ section "Creating systemd service..."
+ cat > /etc/systemd/system/eiq-aaf-connector.service << EOF
+ [Unit]
+ Description=eIQ AAF Connector Service
+-After=network.target rt-sdk-ara2.service
++After=network.target ara2-proxy.service
+ 
+ [Service]
+ Type=simple
+diff --git a/pyproject.toml b/pyproject.toml
+index 99ba287..112b85c 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -21,7 +21,7 @@ authors = [
+     { name = "Alberto Alvarez", email = "alberto.alvarez@nxp.com" },
+     { name = "Juan Jorge Mendoza", email = "juanjorge.mendoza@nxp.com" },
+ ]
+-requires-python = ">=3.13"
++requires-python = ">=3.12"
+ dependencies = [
+     "fastapi>=0.115.12",
+     "regex==2026.2.28",
+@@ -33,7 +33,7 @@ dependencies = [
+     "pillow==12.1.1",
+     "qwen-vl-utils>=0.0.11",
+     "torchvision>=0.21.0",
+-    "opencv-python>=4.12.0.88",
++    "opencv-python-headless>=4.12.0.88",
+     "soundfile>=0.13.1",
+     "librosa>=0.11.0",
+     "optimum-ara>=1.0.0",
+diff --git a/src/eiq_aaf_connector/config/settings.py b/src/eiq_aaf_connector/config/settings.py
+index a4246d9..c1408e5 100644
+--- a/src/eiq_aaf_connector/config/settings.py
++++ b/src/eiq_aaf_connector/config/settings.py
+@@ -45,9 +45,6 @@ class Settings(BaseSettings):
+ 
+     @model_validator(mode="after")
+     def validate_paths(self) -> Self:
+-        if not self.dv_tgt_root.exists():
+-            raise ValueError(f"Path to ARA SDK root does not exist: {self.dv_tgt_root}")
+-
+         if not self.server_config_path.exists() and not self.server_config_path_installed.exists():
+             raise ValueError(
+                 f"Server config file not found at any: {self.server_config_path}, {self.server_config_path_installed}"
+-- 
+2.43.0
+
