@@ -8,5 +8,8 @@ inherit packagegroup
 
 RDEPENDS:${PN} = " \
     eiqa-runtime-prebuilt \
-    neutron-firmware \
+    neutron \
+    python3-pip \
+    onnxruntime \
+    llama-cpp \
 "
