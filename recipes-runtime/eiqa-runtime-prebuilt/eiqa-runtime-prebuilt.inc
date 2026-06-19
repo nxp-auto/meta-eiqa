@@ -28,6 +28,16 @@ python __anonymous() {
         d.setVar('EIQA_ARCH_LIBDIR', 'cortex-a78')
 }
 
+# Source layout inside the extracted archive
+EIQA_SRC_LIBDIR      ?= "${S}/lib/${EIQA_ARCH_LIBDIR}"
+EIQA_SRC_INCDIR      ?= "${S}/include"
+EIQA_SRC_BINDIR      ?= "${S}/bin/a78"
+EIQA_SRC_CARV_LIBDIR ?= "${S}/eiqa_carv/lib"
+EIQA_SRC_CARV_INCDIR ?= "${S}/eiqa_carv/include"
+
+# Name prefixes of bundled libs provided by their own recipe (see RDEPENDS)
+EIQA_BUNDLED_SOLIBS_SKIP ?= "libonnxruntime"
+
 python do_fetch:append() {
     if d.getVar('EIQA_RUNTIME_PREBUILT_URL'):
         return
@@ -55,16 +65,20 @@ python do_fetch:append() {
 
 do_install() {
     install -d ${D}${EIQA_SO}
-    install -m 0755 ${S}/lib/${EIQA_ARCH_LIBDIR}/*.so* ${D}${EIQA_SO}
+    install -m 0755 ${EIQA_SRC_LIBDIR}/*.so* ${D}${EIQA_SO}
+    # Drop bundled libs provided by their own recipe.
+    for pfx in ${EIQA_BUNDLED_SOLIBS_SKIP}; do
+        rm -f ${D}${EIQA_SO}/${pfx}*.so*
+    done
 
     install -d ${D}${EIQA_AR}
-    install -m 0755 ${S}/eiqa_carv/lib/*.a ${D}${EIQA_AR}
-    for f in ${S}/lib/${EIQA_ARCH_LIBDIR}/libeiqa*.a; do
+    install -m 0755 ${EIQA_SRC_CARV_LIBDIR}/*.a ${D}${EIQA_AR}
+    for f in ${EIQA_SRC_LIBDIR}/libeiqa*.a; do
         [ -f "$f" ] && install -m 0755 "$f" ${D}${EIQA_AR}
     done
 
     install -d ${D}${libdir_nativesdk}
-    for f in ${S}/lib/${EIQA_ARCH_LIBDIR}/*.a; do
+    for f in ${EIQA_SRC_LIBDIR}/*.a; do
         basename=$(basename $f)
         case $basename in
             libeiqa*.a) ;;
@@ -73,20 +87,20 @@ do_install() {
     done
 
     install -d ${D}${EIQA_BIN}
-    cp -R ${S}/bin/a78/* ${D}${EIQA_BIN}
-    for f in $(find ${S}/bin/a78 -type f); do
+    cp -R ${EIQA_SRC_BINDIR}/* ${D}${EIQA_BIN}
+    for f in $(find ${EIQA_SRC_BINDIR} -type f); do
         case "$(file -b "$f")" in
-            *ELF*executable*) [ -f "$f" ] && install -m 0755 "$f" ${D}${EIQA_BIN}/${f#${S}/bin/a78/} ;;
+            *ELF*executable*) [ -f "$f" ] && install -m 0755 "$f" ${D}${EIQA_BIN}/${f#${EIQA_SRC_BINDIR}/} ;;
         esac
     done
 
     install -d ${D}${EIQA_INCLUDE}
-    cp -R ${S}/include/* ${D}${EIQA_INCLUDE}
-    cp -R ${S}/eiqa_carv/include/* ${D}${EIQA_INCLUDE}
+    cp -R ${EIQA_SRC_INCDIR}/* ${D}${EIQA_INCLUDE}
+    cp -R ${EIQA_SRC_CARV_INCDIR}/* ${D}${EIQA_INCLUDE}
 
     install -d ${D}${EIQA_CMAKE}
-    cp -R ${S}/lib/${EIQA_ARCH_LIBDIR}/cmake/* ${D}${EIQA_CMAKE}
-    cp -R ${S}/eiqa_carv/lib/cmake/* ${D}${EIQA_CMAKE}
+    cp -R ${EIQA_SRC_LIBDIR}/cmake/* ${D}${EIQA_CMAKE}
+    cp -R ${EIQA_SRC_CARV_LIBDIR}/cmake/* ${D}${EIQA_CMAKE}
 
     # install in sysroot the neutron package delivered with eIQAuto which may be used by neutron recipe
     install -d ${D}${datadir}/neutron
@@ -102,7 +116,7 @@ FILES:${PN} += "${EIQA_SO} ${EIQA_BIN}"
 FILES:${PN}-dev += "${EIQA_INCLUDE} ${EIQA_CMAKE}"
 FILES:${PN}-staticdev += "${EIQA_AR}"
 
-RDEPENDS:${PN} += "libstdc++"
+RDEPENDS:${PN} += "libstdc++ neutron onnxruntime"
 RDEPENDS:${PN}-dev += "${PN}-staticdev"
 BBCLASSEXTEND = "native nativesdk"
 
