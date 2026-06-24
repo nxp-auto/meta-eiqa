@@ -29,6 +29,14 @@ EXTRA_OECMAKE = "\
     -DGGML_CPU_ARM_ARCH=${CPU_ARM_ARCH} \
 "
 
+do_configure[network] = "1"
+do_configure:prepend() {
+    export HTTP_PROXY=${http_proxy}
+    export HTTPS_PROXY=${https_proxy}
+    export http_proxy=${http_proxy}
+    export https_proxy=${https_proxy}
+}
+
 FILES:${PN} += "\
     ${bindir}/* \
     ${libdir}/*.so \
