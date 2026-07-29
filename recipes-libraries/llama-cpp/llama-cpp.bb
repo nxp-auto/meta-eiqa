@@ -1,8 +1,8 @@
 SUMMARY = "llama.cpp"
 DESCRIPTION = "LLM inference in C/C++"
 
-# Commit from 17 June 2026
-SRCREV = "8086439a4cea94c71a5dfb8fe4ad1546aebd640f"
+# Commit from 16 July 2026
+SRCREV = "ac2557cb24def295888ef47f1a35b401d978c510"
 
 S = "${WORKDIR}/git"
 
