@@ -22,6 +22,36 @@ SRC_URI = " \
     file://nnapp_config.yaml \
 "
 
+# BitBake only auto-verifies SRC_URI checksums for remote fetches; a local
+# ARA_RT_TAR_PATH (file://) is not checked, so validate it manually here.
+python do_fetch:append() {
+    if d.getVar('ARA_RT_URL'):
+        return
+
+    ara_rt_tar_path = d.getVar('ARA_RT_TAR_PATH')
+    if not ara_rt_tar_path:
+        return
+
+    if not os.path.isabs(ara_rt_tar_path):
+        paths = (d.getVar("FILESEXTRAPATHS") or "").split(":")
+        for path in paths:
+            candidate = os.path.join(path, ara_rt_tar_path)
+            if os.path.exists(candidate):
+                ara_rt_tar_path = candidate
+                break
+
+    sha256_expected = d.getVarFlag('SRC_URI', 'sha256sum')
+    md5_expected = d.getVarFlag('SRC_URI', 'md5sum')
+
+    sha256_actual = bb.utils.sha256_file(ara_rt_tar_path)
+    md5_actual = bb.utils.md5_file(ara_rt_tar_path)
+
+    if sha256_actual != sha256_expected:
+        bb.fatal(f"SHA256 mismatch: expected {sha256_expected}, found {sha256_actual}")
+    if md5_actual != md5_expected:
+        bb.fatal(f"MD5 mismatch: expected {md5_expected}, found {md5_actual}")
+}
+
 COMPATIBLE_MACHINE = "s32n79rdb|s32n79sim"
 
 inherit bin_package systemd python3-dir
