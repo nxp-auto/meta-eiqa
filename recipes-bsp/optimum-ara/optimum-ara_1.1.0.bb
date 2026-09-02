@@ -1,0 +1,54 @@
+SUMMARY = "Optimum integration for Kinara Ara-2"
+DESCRIPTION = "Hugging Face Optimum extension for running supported models on the Kinara Ara-2 NPU runtime."
+HOMEPAGE = "https://github.com/NXP/Optimum-Ara"
+LICENSE = "Apache-2.0"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=175792518e4ac015ab6696d16c4f607e"
+
+DEPENDS += "python3-hatchling-native"
+
+SRC_URI = "${OPTIMUM_ARA_SRC};branch=${SRCBRANCH}"
+OPTIMUM_ARA_SRC ?= "git://github.com/NXP/Optimum-Ara.git;protocol=https"
+SRCBRANCH = "lf-6.18.37_2.1.0"
+
+SRCREV = "8ed95925342c8404c9131008024fa24a8a46237a"
+
+S = "${WORKDIR}/git"
+
+inherit python3native
+
+do_compile() {
+    cd ${S}
+    ${PYTHON} -m hatchling build -t wheel -d ./dist
+}
+
+do_install() {
+    # Wheel -> python-wheels/ (consumed by eiq-aaf-connector's install.sh)
+    install -d ${D}${datadir}/python-wheels
+    install -m 0644 ${S}/dist/optimum_ara-*.whl \
+                     ${D}${datadir}/python-wheels/
+
+    # docs/examples/models/README.md -> ara2/optimum-ara/. The ara2-* runtime
+    # scripts and fetch_models.py read model configs and example manifests
+    # from these trees, so the full dirs (not just the wheel) are needed on
+    # target. Only docs/assets (heavy architecture diagrams) is pruned below.
+    install -d ${D}${datadir}/ara2/optimum-ara
+    cp -a --no-preserve=ownership ${S}/docs ${S}/examples ${S}/models ${S}/README.md \
+                                  ${D}${datadir}/ara2/optimum-ara/
+    # docs/assets ships heavy architecture diagrams; drop to slim the .bin
+    rm -rf ${D}${datadir}/ara2/optimum-ara/docs/assets
+}
+
+FILES:${PN} = " \
+    ${datadir}/python-wheels/*.whl \
+    ${datadir}/ara2/optimum-ara \
+"
+
+RDEPENDS:${PN} += " \
+    ara2-rt \
+    ara2-rt-python \
+    python3-ctypes \
+    python3-json \
+    python3-logging \
+    python3-pip \
+    python3-venv \
+"
