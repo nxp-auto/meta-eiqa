@@ -1,6 +1,5 @@
-LICENSE = "Kinara-Proprietary"
-LIC_FILES_CHKSUM = "file://art/LICENSE.txt;md5=609f4b4e754be5a7000f9af9a2d0971e"
-NO_GENERIC_LICENSE[Kinara-Proprietary] = "art/LICENSE.txt"
+LICENSE = "LA_OPT_NXP_Software_License"
+LIC_FILES_CHKSUM = "file://art/LICENSE.txt;md5=6e3af31040e8677f8165c1e7d013a34b"
 
 ARA_RT_TAR_PATH ??= ""
 ARA_RT_URL ??= ""
@@ -177,9 +176,9 @@ do_install() {
 
     # Python binding (for -python subpackage)
     if [ -f ${S}/art/linux/aarch64/include/dvapi.py ]; then
-        install -d ${D}${PYTHON_SITEPACKAGES_DIR}
+        install -d ${D}${datadir}/ara2
         install -m 0644 ${S}/art/linux/aarch64/include/dvapi.py \
-                         ${D}${PYTHON_SITEPACKAGES_DIR}/dvapi.py
+                         ${D}${datadir}/ara2/dvapi.py
     fi
 }
 
@@ -226,7 +225,7 @@ FILES:${PN}-nnapp = " \
 "
 
 FILES:${PN}-python = " \
-    ${PYTHON_SITEPACKAGES_DIR}/dvapi.py \
+    ${datadir}/ara2/dvapi.py \
 "
 
 # Configuration files can be edited by users.
