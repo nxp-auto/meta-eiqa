@@ -1,0 +1,35 @@
+From 3a50f4f0e4897cceb3b0ef9560478f42bc02f6a2 Mon Sep 17 00:00:00 2001
+From: Alexandru Iulian Taran <alexandru.taran@nxp.com>
+Date: Wed, 19 Aug 2026 21:34:36 +0300
+Subject: [PATCH] AIMLPRD-495 Support for Auto BSP
+
+Signed-off-by: Alexandru Iulian Taran <alexandru.taran@nxp.com>
+---
+ install.sh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/install.sh b/install.sh
+index b697436..4853c39 100755
+--- a/install.sh
++++ b/install.sh
+@@ -165,7 +165,7 @@ else
+   # Try to set date
+   old_date=$(date)
+   if date -u -s "$srv_date" >/dev/null 2>&1; then
+-    hwclock --systohc
++    #hwclock --systohc
+     success "System time updated successfully ($old_date -> $(date))"
+   else
+     warning "Failed to set system time. Installation might fail"
+@@ -201,7 +201,7 @@ section "Creating systemd service..."
+ cat > /etc/systemd/system/eiq-aaf-connector.service << EOF
+ [Unit]
+ Description=eIQ AAF Connector Service
+-After=network.target ara2-device.target
++After=network.target ara2-proxy.target
+ 
+ [Service]
+ Type=simple
+-- 
+2.43.0
+
