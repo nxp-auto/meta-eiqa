@@ -1,5 +1,5 @@
 LICENSE = "LA_OPT_NXP_Software_License"
-LIC_FILES_CHKSUM = "file://art/LICENSE.txt;md5=6e3af31040e8677f8165c1e7d013a34b"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=6e3af31040e8677f8165c1e7d013a34b"
 
 ARA_RT_TAR_PATH ??= ""
 ARA_RT_URL ??= ""
@@ -79,38 +79,38 @@ ARA_LIBEXEC = "${libexecdir}/ara2"
 do_install() {
     # Proxy daemon
     install -d ${D}${ARA_LIBEXEC}/proxy/mcp0
-    install -m 0755 ${S}/art/linux/aarch64/proxy/proxy_aarch64 \
+    install -m 0755 ${S}/aarch64/proxy/proxy_aarch64 \
                      ${D}${ARA_LIBEXEC}/proxy/proxy_aarch64
-    install -m 0644 ${S}/art/linux/aarch64/proxy/mcp0/vpu0.hex \
+    install -m 0644 ${S}/aarch64/proxy/mcp0/vpu0.hex \
                      ${D}${ARA_LIBEXEC}/proxy/mcp0/vpu0.hex
 
     # Client library
     install -d ${D}${libdir}
-    install -m 0755 ${S}/art/linux/aarch64/lib/libaraclient_aarch64.so \
+    install -m 0755 ${S}/aarch64/lib/libaraclient_aarch64.so \
                      ${D}${libdir}/libaraclient_aarch64.so
 
     # Headers (for -dev package)
     install -d ${D}${includedir}/ara2
-    install -m 0644 ${S}/art/linux/aarch64/include/dvapi.h \
+    install -m 0644 ${S}/aarch64/include/dvapi.h \
                      ${D}${includedir}/ara2/dvapi.h
-    install -m 0644 ${S}/art/linux/aarch64/include/dv_status_codes.h \
+    install -m 0644 ${S}/aarch64/include/dv_status_codes.h \
                      ${D}${includedir}/ara2/dv_status_codes.h
 
     # Static library (for -dev package)
-    install -m 0644 ${S}/art/linux/aarch64/lib/libaraclient_aarch64.a \
+    install -m 0644 ${S}/aarch64/lib/libaraclient_aarch64.a \
                      ${D}${libdir}/libaraclient_aarch64.a
 
     # Hardware utilities (core — required for boot)
     install -d ${D}${ARA_LIBEXEC}/hw_utils
     for bin in ${ARA2_HW_UTILS_CORE}; do
-        install -m 0755 ${S}/art/linux/aarch64/hw_utils/bins/${bin} \
+        install -m 0755 ${S}/aarch64/hw_utils/bins/${bin} \
                          ${D}${ARA_LIBEXEC}/hw_utils/${bin}
     done
 
     # DDR configuration binaries
     install -d ${D}${datadir}/ara2/ddr_config
-    if [ -d ${S}/art/linux/aarch64/hw_utils/ddr_config ]; then
-        for cfg in ${S}/art/linux/aarch64/hw_utils/ddr_config/*; do
+    if [ -d ${S}/aarch64/hw_utils/ddr_config ]; then
+        for cfg in ${S}/aarch64/hw_utils/ddr_config/*; do
             [ -f "${cfg}" ] || continue
             install -m 0644 "${cfg}" ${D}${datadir}/ara2/ddr_config/
         done
@@ -156,28 +156,28 @@ do_install() {
     # Utilities subpackage (provisioning/debug tools)
     install -d ${D}${ARA_LIBEXEC}/hw_utils/boot_img
     for bin in ${ARA2_HW_UTILS_EXTRA}; do
-        if [ -f ${S}/art/linux/aarch64/hw_utils/bins/${bin} ]; then
-            install -m 0755 ${S}/art/linux/aarch64/hw_utils/bins/${bin} \
+        if [ -f ${S}/aarch64/hw_utils/bins/${bin} ]; then
+            install -m 0755 ${S}/aarch64/hw_utils/bins/${bin} \
                              ${D}${ARA_LIBEXEC}/hw_utils/${bin}
         fi
     done
-    if [ -d ${S}/art/linux/aarch64/hw_utils/boot_img ]; then
-        cp -R ${S}/art/linux/aarch64/hw_utils/boot_img/* ${D}${ARA_LIBEXEC}/hw_utils/boot_img/
+    if [ -d ${S}/aarch64/hw_utils/boot_img ]; then
+        cp -R ${S}/aarch64/hw_utils/boot_img/* ${D}${ARA_LIBEXEC}/hw_utils/boot_img/
     fi
 
     # nnapp subpackage
-    if [ -f ${S}/art/linux/aarch64/nnapp/nnapp_aarch64 ]; then
+    if [ -f ${S}/aarch64/nnapp/nnapp_aarch64 ]; then
         install -d ${D}${bindir}
-        install -m 0755 ${S}/art/linux/aarch64/nnapp/nnapp_aarch64 \
+        install -m 0755 ${S}/aarch64/nnapp/nnapp_aarch64 \
                          ${D}${bindir}/nnapp
     fi
     install -d ${D}${sysconfdir}/ara2
     install -m 0644 ${WORKDIR}/nnapp_config.yaml ${D}${sysconfdir}/ara2/nnapp_config.yaml
 
     # Python binding (for -python subpackage)
-    if [ -f ${S}/art/linux/aarch64/include/dvapi.py ]; then
+    if [ -f ${S}/aarch64/include/dvapi.py ]; then
         install -d ${D}${datadir}/ara2
-        install -m 0644 ${S}/art/linux/aarch64/include/dvapi.py \
+        install -m 0644 ${S}/aarch64/include/dvapi.py \
                          ${D}${datadir}/ara2/dvapi.py
     fi
 }
