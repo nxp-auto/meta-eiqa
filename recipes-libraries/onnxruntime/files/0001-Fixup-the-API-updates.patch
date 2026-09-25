@@ -1,0 +1,82 @@
+From f71eadd168a740dba5caffb31ebd4e10cc2ac773 Mon Sep 17 00:00:00 2001
+From: Alexandru Iulian Taran <alexandru.taran@nxp.com>
+Date: Fri, 25 Sep 2026 16:18:46 +0300
+Subject: [PATCH] Fixup the API updates
+
+Signed-off-by: Alexandru Iulian Taran <alexandru.taran@nxp.com>
+---
+ onnxruntime/core/providers/neutron/ops/matmul_integer.cc        | 2 +-
+ .../core/providers/neutron/ops/matmul_integer_to_float.cc       | 2 +-
+ onnxruntime/core/providers/neutron/ops/matmul_nbits.cc          | 2 +-
+ onnxruntime/core/providers/neutron/ops/qgemm.cc                 | 2 +-
+ onnxruntime/core/providers/neutron/ops/qlinear_matmul.cc        | 2 +-
+ 5 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/onnxruntime/core/providers/neutron/ops/matmul_integer.cc b/onnxruntime/core/providers/neutron/ops/matmul_integer.cc
+index d44d57ee0..4dbcb232b 100644
+--- a/onnxruntime/core/providers/neutron/ops/matmul_integer.cc
++++ b/onnxruntime/core/providers/neutron/ops/matmul_integer.cc
+@@ -313,7 +313,7 @@ Status MatMulInteger::Compute(OpKernelContext* ctx) const {
+     clock_gettime(CLOCK_REALTIME, &t3);
+ 
+     NeutronError ret = ENONE;
+-    ret = matmul((const void *)m_header, 16*sizeof(uint32_t), (const void*)a_neutron, a_size, (const void*)y_neutron, y_size, m_handle);
++    ret = matmul((const NeutronMatmulHeader *)m_header, (const void*)a_neutron, a_size, (const void*)y_neutron, y_size, m_handle);
+     if (ret != ENONE){
+         return ORT_MAKE_STATUS(ONNXRUNTIME, FAIL, "matmul() error");
+     }
+diff --git a/onnxruntime/core/providers/neutron/ops/matmul_integer_to_float.cc b/onnxruntime/core/providers/neutron/ops/matmul_integer_to_float.cc
+index 86bc2553b..3fad6a53d 100644
+--- a/onnxruntime/core/providers/neutron/ops/matmul_integer_to_float.cc
++++ b/onnxruntime/core/providers/neutron/ops/matmul_integer_to_float.cc
+@@ -348,7 +348,7 @@ Status MatMulIntegerToFloat::Compute(OpKernelContext* ctx) const {
+     clock_gettime(CLOCK_REALTIME, &t3);
+ 
+     NeutronError ret = ENONE;
+-    ret = matmul((const void *)m_header, 16*sizeof(uint32_t), (const void*)a_neutron, a_size, (const void*)y_neutron, y_size, m_handle);
++    ret = matmul((const NeutronMatmulHeader *)m_header, (const void*)a_neutron, a_size, (const void*)y_neutron, y_size, m_handle);
+     if (ret != ENONE){
+         return ORT_MAKE_STATUS(ONNXRUNTIME, FAIL, "matmul() error");
+     }
+diff --git a/onnxruntime/core/providers/neutron/ops/matmul_nbits.cc b/onnxruntime/core/providers/neutron/ops/matmul_nbits.cc
+index cfc90a347..08e6aa77d 100644
+--- a/onnxruntime/core/providers/neutron/ops/matmul_nbits.cc
++++ b/onnxruntime/core/providers/neutron/ops/matmul_nbits.cc
+@@ -785,7 +785,7 @@ Status MatMulNBits::Compute(OpKernelContext* ctx) const {
+ 
+ #if defined(USE_NBITS_KERNEL) || defined(USE_8BITS_KERNEL)
+   NeutronError ret = ENONE;
+-  ret = matmul((const void *)m_header, 16 * sizeof(uint32_t), (const void *)a_neutron, a_size,
++  ret = matmul((const NeutronMatmulHeader *)m_header, (const void *)a_neutron, a_size,
+ 		 (const void *)y_neutron, y_size, m_handle);
+   if (ret != ENONE) {
+     return ORT_MAKE_STATUS(ONNXRUNTIME, FAIL, "NeutronEP:MatMulNBits falied to call kernel");
+diff --git a/onnxruntime/core/providers/neutron/ops/qgemm.cc b/onnxruntime/core/providers/neutron/ops/qgemm.cc
+index e10361b98..03cc5bd55 100644
+--- a/onnxruntime/core/providers/neutron/ops/qgemm.cc
++++ b/onnxruntime/core/providers/neutron/ops/qgemm.cc
+@@ -374,7 +374,7 @@ Status QGemm::Compute(OpKernelContext* ctx) const {
+   m_header[15] = (uint8_t *)m_decode_input - (uint8_t *)m_header;
+ 
+   NeutronError ret = ENONE;
+-  ret = matmul((const void *)m_header, 16*sizeof(uint32_t), (const void*)a_neutron,
++  ret = matmul((const NeutronMatmulHeader *)m_header, (const void*)a_neutron,
+ 		 a_size, (const void*)y_neutron, y_size, m_handle);
+   if (ret != ENONE){
+     return ORT_MAKE_STATUS(ONNXRUNTIME, FAIL, "matmul() error");
+diff --git a/onnxruntime/core/providers/neutron/ops/qlinear_matmul.cc b/onnxruntime/core/providers/neutron/ops/qlinear_matmul.cc
+index b61d4b4b7..11e0bc4fb 100644
+--- a/onnxruntime/core/providers/neutron/ops/qlinear_matmul.cc
++++ b/onnxruntime/core/providers/neutron/ops/qlinear_matmul.cc
+@@ -358,7 +358,7 @@ Status QLinearMatMul::Compute(OpKernelContext* ctx) const {
+   m_header[15] = 0;
+ 
+   NeutronError ret = ENONE;
+-  ret = matmul((const void *)m_header, 16*sizeof(uint32_t), (const void*)a_neutron,
++  ret = matmul((const NeutronMatmulHeader *)m_header, (const void*)a_neutron,
+ 		 a_size, (const void*)y_neutron, y_size, m_handle);
+   if (ret != ENONE){
+     return ORT_MAKE_STATUS(ONNXRUNTIME, FAIL, "matmul() error");
+-- 
+2.43.0
+
