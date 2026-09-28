@@ -7,8 +7,3 @@ SRC_URI[md5sum] = "52838d665e9920e3e9b15ddbe3d19abe"
 SRC_URI[sha256sum] = "7d5ab1b012e5f2ac341640f785e1d0d0da2f877baecee35c2ef6f5150020371f"
 
 require eiqa-runtime-prebuilt.inc
-
-EIQA_SRC_LIBDIR      = "${S}/a78/lib"
-EIQA_SRC_INCDIR      = "${S}/a78/include"
-EIQA_SRC_CARV_LIBDIR = "${S}/carv/lib"
-EIQA_SRC_CARV_INCDIR = "${S}/carv/include"

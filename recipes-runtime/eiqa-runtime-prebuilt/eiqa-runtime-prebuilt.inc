@@ -21,19 +21,12 @@ EIQA_BIN = "${EIQA_ROOT}/bin"
 EIQA_INCLUDE = "${EIQA_ROOT}/include"
 EIQA_CMAKE = "${EIQA_ROOT}/cmake"
 
-python __anonymous() {
-    if bb.utils.vercmp_string(d.getVar('PV'), '3.13.0') > 0:
-        d.setVar('EIQA_ARCH_LIBDIR', 'aarch64')
-    else:
-        d.setVar('EIQA_ARCH_LIBDIR', 'cortex-a78')
-}
-
 # Source layout inside the extracted archive
-EIQA_SRC_LIBDIR      ?= "${S}/lib/${EIQA_ARCH_LIBDIR}"
-EIQA_SRC_INCDIR      ?= "${S}/include"
-EIQA_SRC_BINDIR      ?= "${S}/bin/a78"
-EIQA_SRC_CARV_LIBDIR ?= "${S}/eiqa_carv/lib"
-EIQA_SRC_CARV_INCDIR ?= "${S}/eiqa_carv/include"
+EIQA_SRC_LIBDIR      = "${S}/a78/lib"
+EIQA_SRC_INCDIR      = "${S}/a78/include"
+EIQA_SRC_BINDIR      = "${S}/bin/a78"
+EIQA_SRC_CARV_LIBDIR = "${S}/carv/lib"
+EIQA_SRC_CARV_INCDIR = "${S}/carv/include"
 
 # Name prefixes of bundled libs provided by their own recipe (see RDEPENDS)
 EIQA_BUNDLED_SOLIBS_SKIP ?= "libonnxruntime"
